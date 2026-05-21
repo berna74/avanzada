@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
+  
+  <title>Final PWA</title>
+</head>
+
+
+
+
+
+<body>
+  <div class="app" id="app">
+    <div class="seccion">
+      <h4 class="titulo-grande">Información de Perfil</h4>
+      <p class="texto-base">
+        <b>Nombre:</b> {{ nombre }}<br />
+        <b>Edad:</b> {{ edad }} años<br />
+        <b>Ciudad:</b> {{ ciudad }}<br />
+        Hola, mi nombre es {{ nombre }}, tengo {{ edad }} años y vivo en {{
+        ciudad }}.
+      </p>
+    </div>
+  </div>
+    
+  <script>
+    new Vue({
+      el: "#app",
+      data() {
+        return {
+          nombre: "Ana García",
+          edad: 30,
+          ciudad: "Madrid",
+          };
+      },
+
+
+      methods: {
+        
+      },
+
+
+      computed: {
+        
+      },
+    });
+</script>
