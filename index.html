@@ -25,6 +25,10 @@
         ciudad }}.
       </p>
     </div>
+    
+    
+    
+    
     <div class="seccion">
       <h4 class="titulo-grande">
         Contador Interactivo
@@ -39,7 +43,10 @@
         </boton-app>
       </div>
 </div>
-    <div class="seccion">
+   
+
+
+<div class="seccion">
       <h4 class="titulo-grande">
         Lista de Tareas 
       </h4>
@@ -63,8 +70,49 @@
         </p>
       </div>
     </div>
+  
+      
+  
     
+
+    <div class="seccion">
+        
+        <div class="en-fila arriba-medio pegado-izq">
+            <div class="media-pantalla">
+                <h5 class="subtitulo">Listado de Posts</h5>
+                <div class="listita" style="max-height: 415px; overflow-y: auto; list-style: none; padding: 0; margin: 0;">
+                  <boton-lista 
+                        v-for="post in lista10Posts" 
+                        :key="post.id"
+                        @click="verComentariosDeLista(post.id)"
+                    :activo="postSeleccionadoId === post.id"
+                    >
+                        <strong>Nº{{ post.id }}</strong> {{ post.title }}
+                  </boton-lista>
+                </div>
+            </div>
+            <div class="media-pantalla">
+                <h5 class="subtitulo">Comentarios</h5>
+                <div v-if="comentariosSeleccionados.length > 0" class="tarjetita">
+                    <div class="adentro-tarjeta">
+                        <ul class="listita lista-limpia">
+                            <li v-for="comentario in comentariosSeleccionados" :key="comentario.id" class="renglon">
+                                <strong><small class="data-posta en-minuscula">{{ comentario.email }}</small></strong><br>
+                                <span class="medio-grisaceo letritas">{{ comentario.body }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div v-else class="aviso aviso-info">
+                    Seleccione un post para ver los comentarios.
+                </div>
+            </div>
+        </div>
+      </div>
   </div>
+
+
+
 
 
 
@@ -121,11 +169,17 @@
           contador: 0,
           nuevaTarea: "",
           tareas: [
-            { id: 1, texto: "Practicar derecha", completada: false },
-            { id: 2, texto: "Entrenar rebote", completada: true },
-            { id: 3, texto: "Comprar pelotas", completada: false },
+            { id: 1, texto: "Hacer las compras", completada: false },
+            { id: 2, texto: "Lavar el auto", completada: true },
+            { id: 3, texto: "Estudiar Vue.js", completada: false },
           ],
-     };
+          posts: [],
+          postBuscado: null,
+          comentarios: [],
+          lista10Posts: [],          
+          comentariosSeleccionados: [], 
+          postSeleccionadoId: null
+        };
       },
       methods: {
         incrementar() {
@@ -144,7 +198,6 @@
             this.nuevaTarea = "";
           }
         },
-        
         obtenerPost(postId) {
           return axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}`)
             .then(function (response) {
@@ -168,6 +221,14 @@
             })
             .finally(function () { });
         },
+        verComentariosDeLista(id) {
+          this.postSeleccionadoId = id;
+          this.comentariosSeleccionados = [];
+            this.obtenerComments(id).then(data => {
+                this.comentariosSeleccionados = data;
+            });
+          },
+       
       },
       computed: {
         tareasPendientes() {
@@ -176,6 +237,16 @@
         totalTareas() {
           return this.tareas.length;
         },
+      },
+      mounted() {
+        for (let i = 1; i <= 10; i++) {
+          this.obtenerPost(i).then((post) => {
+            if (post) {
+              this.lista10Posts.push(post);
+              this.lista10Posts.sort((a, b) => a.id - b.id);
+            }
+          });
+        }
       },
       
     });
@@ -236,7 +307,22 @@
     .letritas        { font-size: 0.875em; }
     .pegado-izq      { text-align: left; }
 
-    
+    /* Caja para comentarios */
+    .en-linea        { display: flex; }
+    .todo-centrado   { display: flex; flex-wrap: wrap; justify-content: center; }
+    .bien-separado   { justify-content: space-between; }
+    .al-medio        { align-items: center; }
+    .espacio-chico   { gap: 1rem; }
+    .espacio-grande  { gap: 3rem; }
+
+    /* Dos columnas */
+    .en-fila       { display: flex; flex-wrap: wrap; }
+    .media-pantalla {
+      width: 50%;
+      padding: 0 0.75rem;
+      box-sizing: border-box;
+    }
+
     /* Botones */
     .boton {
       display: inline-block;
@@ -297,7 +383,12 @@
       text-align: left;
     }
 
-    
+    .listita {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-radius: 0.25rem;
+    }
     .lista-tareas {
       margin: auto;
     }
@@ -338,7 +429,49 @@
       border-radius: 0;
     }
 
-   
+    /* El scroll de los eventos */
+    .divScroll {
+      height: 200px;
+      overflow-y: scroll;
+      width: 45%;
+      margin: auto;
+    }
+
+    /* Tarjetita */
+    .tarjetita {
+      border: 1px solid #000000;
+      border-radius: 0.25rem;
+      background-color: #ffffff;
+    }
+    .adentro-tarjeta {
+      padding: 1rem;
+      max-height: 410px;
+      overflow-y: auto;
+    }
+
+    /* Aviso */
+    .aviso {
+      padding: 0.75rem 1.25rem;
+      border: 1px solid transparent;
+      border-radius: 0.25rem;
+    }
+    .aviso-info {
+      background-color: #f5f5f5;
+      border-color: #000000;
+      color: #000000;
+    }
+
+    /* Comentarios */
+    .comentarios {
+      display: flex;
+      border: 1px solid #000000;
+      border-radius: 4px;
+      padding: 10px;
+      background-color: #f5f5f5;
+    }
+    .fondo-blanquito {
+      background-color: #f5f5f5;
+    }
   </style>
 
 </body>
