@@ -38,6 +38,32 @@
           -
         </boton-app>
       </div>
+</div>
+  <div class="seccion">
+      <h4 class="titulo-grande">
+        Lista de Tareas 
+      </h4>
+      <div class="todo-centrado espacio-chico arriba-banda nueva-tarea">
+        <input v-model="nuevaTarea" placeholder="Nueva tarea" class="cajita la-mitad" />
+        <boton-app tipo="boton-negro" @click="agregarTarea">
+          Agregar Tarea
+        </boton-app>
+      </div>
+      <ul class="listita arriba-medio lista-tareas">
+        <li v-for="tarea in tareas" :key="tarea.id"
+          class="renglon en-linea bien-separado al-medio">
+          <span :style="{ textDecoration: tarea.completada ? 'line-through' : 'none' }">{{ tarea.texto }}</span>
+          <input type="checkbox" v-model="tarea.completada" />
+        </li>
+      </ul>
+      <div class="resumen-tareas arriba-poco">
+        <h5 class="titulo-mediano">Tareas en total: {{ totalTareas }}</h5>
+        <p class="titulo-mediano">
+          Tareas pendientes: {{ tareasPendientes }}
+        </p>
+      </div>
+    </div>
+
     </div>
   </div>
 
@@ -70,6 +96,24 @@
       `,
     });
 
+    Vue.component("boton-lista", {
+      props: {
+        activo: {
+          type: Boolean,
+          default: false,
+        },
+      },
+      template: `
+        <button
+          type="button"
+          class="renglon item-clickeable"
+          :class="{ seleccionado: activo }"
+          @click="$emit('click', $event)"
+        >
+          <slot></slot>
+        </button>
+      `,
+    });
 
 
 
@@ -81,7 +125,13 @@
           nombre: "Ana García",
           edad: 30,
           ciudad: "Madrid",
-          contador: 0
+          contador: 0,
+          nuevaTarea: "",
+          tareas: [
+            { id: 1, texto: "Practicar derecha", completada: false },
+            { id: 2, texto: "Entrenar rebote", completada: true },
+            { id: 3, texto: "Comprar pelotas", completada: false },
+          ],
         };
       },
 
@@ -93,11 +143,26 @@
         decrementar() {
           this.contador--;
         },
+        agregarTarea() {
+          if (this.nuevaTarea !== "") {
+            this.tareas.push({
+              id: this.tareas.length + 1,
+              texto: this.nuevaTarea,
+              completada: false,
+            });
+            this.nuevaTarea = "";
+          }
+        },
       },
 
 
       computed: {
-        
+        totalTareas() {
+          return this.tareas.length;
+        },
+        tareasPendientes() {
+          return this.tareas.filter(tarea => !tarea.completada).length;
+        },
       },
     });
 </script>
@@ -130,6 +195,14 @@
       margin-bottom: 1rem;
     }
 
+     /* Espaciado */
+    .arriba-poco   { margin-top: 1rem; text-align: left;}
+    .arriba-medio  { margin-top: 1.5rem; }
+    .arriba-banda  { margin-top: 3rem; }
+    .abajo-poco    { margin-bottom: 1rem; }
+    .la-mitad      { width: 50%; }
+
+
     .titulo-grande {
       font-size: 1.5rem;
       font-weight: bold;
@@ -146,7 +219,7 @@
       text-align: left;
     }
 
-    /* Botones */
+     /* Botones */
     .boton {
       display: inline-block;
       padding: 0.375rem 0.75rem;
@@ -180,7 +253,77 @@
       color: #ffffff;
     }
 
-   
+    /* Cajita de texto */
+    .cajita {
+      display: inline-block;
+      padding: 0.375rem 0.75rem;
+      font-size: 1rem;
+      border: 1px solid #cccccc;
+      border-radius: 0.25rem;
+      box-sizing: border-box;
+    }
+
+    /* Listitas */
+    ul,
+    .nueva-tarea {
+      width: 30vw;
+      margin: auto;
+    }
+    .nueva-tarea {
+      margin-bottom: 1rem;
+    }
+
+    .resumen-tareas {
+      width: 30vw;
+      margin: auto;
+      text-align: left;
+    }
+
+    .listita {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      border-radius: 0.25rem;
+    }
+    .lista-tareas {
+      margin: auto;
+    }
+    .renglon {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.5rem 1rem;
+      border: 1px solid #cccccc;
+      border-top: none;
+      background-color: #ffffff;
+    }
+    .renglon:first-child {
+      border-top: 1px solid #cccccc;
+      border-radius: 0.25rem 0.25rem 0 0;
+    }
+    .renglon:last-child {
+      border-radius: 0 0 0.25rem 0.25rem;
+    }
+    .renglon.seleccionado {
+      background-color: #000000;
+      border-color: #000000;
+      color: #ffffff;
+    }
+    .item-clickeable {
+      cursor: pointer;
+      width: 100%;
+      text-align: left;
+      background-color: #ffffff;
+    }
+    .item-clickeable:hover {
+      background-color: #f0f0f0;
+      color: #000000;
+    }
+    .lista-limpia .renglon {
+      border-left: none;
+      border-right: none;
+      border-radius: 0;
+    }
     
     
   </style>
