@@ -5,7 +5,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.js"></script>
-  
+  <script src="https://cdn.jsdelivr.net/npm/axios@1.6.7/dist/axios.min.js"></script>
   <title>Final PWA</title>
 </head>
 
@@ -39,7 +39,7 @@
         </boton-app>
       </div>
 </div>
-  <div class="seccion">
+    <div class="seccion">
       <h4 class="titulo-grande">
         Lista de Tareas 
       </h4>
@@ -63,17 +63,13 @@
         </p>
       </div>
     </div>
-
-    </div>
+    
   </div>
 
 
 
-
-    
   <script>
-
-       Vue.component("boton-app", {
+    Vue.component("boton-app", {
       props: {
         tipo: {
           type: String,
@@ -115,9 +111,6 @@
       `,
     });
 
-
-
-
     new Vue({
       el: "#app",
       data() {
@@ -132,10 +125,8 @@
             { id: 2, texto: "Entrenar rebote", completada: true },
             { id: 3, texto: "Comprar pelotas", completada: false },
           ],
-        };
+     };
       },
-
-
       methods: {
         incrementar() {
           this.contador++;
@@ -153,27 +144,50 @@
             this.nuevaTarea = "";
           }
         },
+        
+        obtenerPost(postId) {
+          return axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}`)
+            .then(function (response) {
+              return response.data;
+            })
+            .catch(function (error) {
+              console.error("Error al obtener post:", error);
+              return null;
+            })
+            .finally(function () { });
+        },
+       
+        obtenerComments(postId) {
+          return axios.get(`https://jsonplaceholder.typicode.com/posts/${postId}/comments`)
+            .then(function (response) {
+              return response.data;
+            })
+            .catch(function (error) {
+              console.log(error);
+              return [];
+            })
+            .finally(function () { });
+        },
       },
-
-
       computed: {
+        tareasPendientes() {
+          return this.tareas.filter((tarea) => !tarea.completada).length;
+        },
         totalTareas() {
           return this.tareas.length;
         },
-        tareasPendientes() {
-          return this.tareas.filter(tarea => !tarea.completada).length;
-        },
       },
+      
     });
-</script>
 
-  
+
+  </script>
 
 
 
 
   <style>
-   
+    /* Base */
     body {
       background-color: #ffffff;
       color: #000000;
@@ -195,14 +209,14 @@
       margin-bottom: 1rem;
     }
 
-     /* Espaciado */
-    .arriba-poco   { margin-top: 1rem; text-align: left;}
+    /* Espaciado */
+    .arriba-poco   { margin-top: 1rem; text-align: left }
     .arriba-medio  { margin-top: 1.5rem; }
     .arriba-banda  { margin-top: 3rem; }
     .abajo-poco    { margin-bottom: 1rem; }
     .la-mitad      { width: 50%; }
 
-
+    /* Texto */
     .titulo-grande {
       font-size: 1.5rem;
       font-weight: bold;
@@ -212,14 +226,18 @@
       font-size: 0.8rem;
       font-weight: bold;
     }
-    
-    .texto-base {
-      font-size: 1rem;
-      line-height: 1.5;
-      text-align: left;
+    .subtitulo,
+    .data-posta {
+      color: #000000;
     }
+    .texto-base      { color: inherit; text-align: left; }
+    .medio-grisaceo  { color: #555555; }
+    .en-minuscula    { text-transform: lowercase; }
+    .letritas        { font-size: 0.875em; }
+    .pegado-izq      { text-align: left; }
 
-     /* Botones */
+    
+    /* Botones */
     .boton {
       display: inline-block;
       padding: 0.375rem 0.75rem;
@@ -279,12 +297,7 @@
       text-align: left;
     }
 
-    .listita {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-      border-radius: 0.25rem;
-    }
+    
     .lista-tareas {
       margin: auto;
     }
@@ -324,11 +337,9 @@
       border-right: none;
       border-radius: 0;
     }
-    
-    
+
+   
   </style>
-
-
 
 </body>
 
